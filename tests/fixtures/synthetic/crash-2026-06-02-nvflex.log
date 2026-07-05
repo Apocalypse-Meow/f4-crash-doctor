@@ -1,0 +1,96 @@
+Fallout 4 v1.11.191
+Buffout 4 v1.28.6
+
+Unhandled exception "EXCEPTION_ACCESS_VIOLATION" at 0x7FFE1D84B6F0 flexRelease_x64.dll+002B6F0
+
+SETTINGS:
+	[Compatibility]
+	    F4EE: true
+	[Fixes]
+	    CellInit: true
+	    SafeExit: true
+	    UtilityShader: true
+	[Patches]
+	    Achievements: true
+	    MemoryManager: true
+	    ScaleformAllocator: true
+	[Warnings]
+	    CreateTexture2D: true
+
+SYSTEM SPECS:
+	OS: Microsoft Windows 11 Home v10.0.26200
+	CPU: AuthenticAMD AMD Ryzen 7 5800X3D 8-Core Processor
+	GPU #1: Nvidia GA102 [GeForce RTX 3090]
+	PHYSICAL MEMORY: 19.03 GB/31.92 GB
+
+PROBABLE CALL STACK:
+	[ 0] 0x7FFE1D84B6F0 flexRelease_x64.dll+002B6F0
+	[ 1] 0x7FFE1D83F210 flexRelease_x64.dll+001F210
+	[ 2] 0x7FFE1D8A0CC4 flexRelease_x64.dll+0080CC4
+	[ 3] 0x7FF7A50E3B90 Fallout4.exe+0923B90 -> BSDebrisManager::UpdateDebris+0x110
+	[ 4] 0x7FF7A50E19A8 Fallout4.exe+09219A8
+	[ 5] 0x7FF7A4E77D30 Fallout4.exe+06B7D30 -> ProcessLists::UpdateEffects+0x260
+	[ 6] 0x7FF7A4A0E200 Fallout4.exe+024E200 -> BSJobs::JobThread::Run+0xF0
+	[ 7] 0x7FF7A49F1B38 Fallout4.exe+0231B38
+	[ 8] 0x7FFE31C44ED0 ucrtbase.dll+0024ED0
+	[ 9] 0x7FFE33A2E8D7 KERNEL32.DLL+001E8D7
+	[10] 0x7FFE3465BF2C ntdll.dll+005BF2C
+
+REGISTERS:
+	RAX 0x0                (size_t) [0]
+	RCX 0x2B7D2F00120      (void*)
+	RDX 0x8                (size_t) [8]
+	RBX 0x0                (size_t) [0]
+	RSP 0x91D2C7FDA0       (void*)
+	RBP 0x91D2C7FE40       (void*)
+	RSI 0x2B7D2F00000      (void*)
+	RDI 0x2B7C1B33A80      (void*)
+
+STACK:
+	[RSP+0   ] 0x7FFE1D83F210  (void* -> flexRelease_x64.dll+001F210)
+	[RSP+8   ] 0x2B7D2F00120   (void*)
+	[RSP+10  ] 0x8             (size_t) [8]
+	[RSP+18  ] 0x2B7C1B33A80   (void*)
+	[RSP+20  ] 0x7FF7A50E3B90  (void* -> Fallout4.exe+0923B90)
+	[RSP+28  ] 0x0             (size_t) [0]
+	[RSP+30  ] 0x7FF7A4E77D30  (void* -> Fallout4.exe+06B7D30)
+	[RSP+38  ] 0x91D2C7FE40    (void*)
+
+MODULES:
+	Fallout4.exe                 0x7FF7A47C0000
+	f4se_1_11_191.dll            0x7FFE0F2A0000
+	Buffout4.dll                 0x7FFE0D410000
+	flexRelease_x64.dll          0x7FFE1D820000
+	nvwgf2umx.dll                0x7FFE1A000000
+	d3d11.dll                    0x7FFE2F1B0000
+	ucrtbase.dll                 0x7FFE31C20000
+	KERNEL32.DLL                 0x7FFE33A10000
+	ntdll.dll                    0x7FFE34600000
+
+F4SE PLUGINS:
+	Buffout4.dll v1.28.6
+	f4ee.dll v1.0.18
+	mcm.dll v1.39
+	PrivateProfileRedirector.dll v0.5.2
+
+PLUGINS:
+	[00] Fallout4.esm
+	[01] DLCRobot.esm
+	[02] DLCworkshop01.esm
+	[03] DLCCoast.esm
+	[04] DLCworkshop02.esm
+	[05] DLCworkshop03.esm
+	[06] DLCNukaWorld.esm
+	[07] Unofficial Fallout 4 Patch.esp
+	[08] ArmorKeywords.esm
+	[09] HUDFramework.esm
+	[0A] NAC-X.esp
+	[0B] LooksMenu.esp
+	[0C] TrueStormsFO4.esm
+	[0D] SettlementKeywords.esm
+	[0E] BostonFPSFixAIO.esp
+	[0F] EveryonesBestFriend.esp
+	[10] WeaponDebrisEnabler.esp
+	[FE:000] CraftingFramework.esl
+	[FE:001] QuickTradeRedux.esl
+	[FF] overflow_test.esp

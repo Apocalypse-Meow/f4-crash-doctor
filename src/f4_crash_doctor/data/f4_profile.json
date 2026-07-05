@@ -1,0 +1,42 @@
+{
+  "game": "fallout4",
+  "crash_log_dirs": [
+    "{docs}/My Games/Fallout4/F4SE/Crash Logs",
+    "{docs}/My Games/Fallout4/F4SE"
+  ],
+  "plugins_txt": "{localappdata}/Fallout4/Plugins.txt",
+  "data_dir_relative": "Data",
+  "known_roots": [
+    "F:\\SteamLibrary\\steamapps\\common\\Fallout 4"
+  ],
+  "version_matrix": [
+    {
+      "game": "1.11.191",
+      "f4se_dll": "f4se_1_11_191.dll",
+      "address_library_bin": "version-1-11-191-0.bin"
+    },
+    {
+      "game": "1.10.984",
+      "f4se_dll": "f4se_1_10_984.dll",
+      "address_library_bin": "version-1-10-984-0.bin"
+    },
+    {
+      "game": "1.10.163",
+      "f4se_dll": "f4se_1_10_163.dll",
+      "address_library_bin": "version-1-10-163-0.bin"
+    }
+  ],
+  "plugin_cap": 255,
+  "esl_slot": "FE",
+  "frequent_crashers": [
+    "Scrap Everything",
+    "Spring Cleaning",
+    "Extreme Particles Overhaul"
+  ],
+  "known_conflicts": [],
+  "notes": [
+    "Every mod's .ba2 archive uses an open-file slot in the engine and the cap is finite; very large mod lists crash on load with LooseFileAsyncStream in the stack. Trimming the number of .ba2 files in Data is the fix.",
+    "Game versions 1.11.x are the 2024 next-gen update line. F4SE, the Address Library .bin, and many F4SE plugin DLLs are locked to the exact exe version, so all of them must match after any update or downgrade.",
+    "The Weapon Debris graphics setting uses NVIDIA Flex, which crashes on RTX (20-series and newer) GPUs. Keep it Off, or install the Weapon Debris Crash Fix mod."
+  ]
+}

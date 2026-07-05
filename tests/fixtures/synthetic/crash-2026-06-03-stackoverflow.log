@@ -1,0 +1,93 @@
+Fallout 4 v1.11.191
+Buffout 4 v1.28.6
+
+Unhandled exception "EXCEPTION_STACK_OVERFLOW" at 0x7FF7A4D2E4B0 Fallout4.exe+056E4B0
+
+SETTINGS:
+	[Compatibility]
+	    F4EE: true
+	[Fixes]
+	    CellInit: true
+	    SafeExit: true
+	[Patches]
+	    Achievements: true
+	    MaxStdIO: 2048
+	    MemoryManager: true
+	[Warnings]
+	    ImageSpaceAdapter: true
+
+SYSTEM SPECS:
+	OS: Microsoft Windows 11 Home v10.0.26200
+	CPU: AuthenticAMD AMD Ryzen 7 5800X3D 8-Core Processor
+	GPU #1: Nvidia GA102 [GeForce RTX 3090]
+	PHYSICAL MEMORY: 17.66 GB/31.92 GB
+
+PROBABLE CALL STACK:
+	[ 0] 0x7FF7A4D2E4B0 Fallout4.exe+056E4B0 -> TESObjectREFR::GetParentCell+0x10
+	[ 1] 0x7FF7A4D2E520 Fallout4.exe+056E520 -> TESObjectREFR::HandleUpdate+0x80
+	[ 2] 0x7FF7A4D2E4B0 Fallout4.exe+056E4B0 -> TESObjectREFR::GetParentCell+0x10
+	[ 3] 0x7FF7A4D2E520 Fallout4.exe+056E520 -> TESObjectREFR::HandleUpdate+0x80
+	[ 4] 0x7FF7A4D2E4B0 Fallout4.exe+056E4B0 -> TESObjectREFR::GetParentCell+0x10
+	[ 5] 0x7FF7A4D2E520 Fallout4.exe+056E520 -> TESObjectREFR::HandleUpdate+0x80
+	[ 6] 0x7FF7A4D2E4B0 Fallout4.exe+056E4B0 -> TESObjectREFR::GetParentCell+0x10
+	[ 7] 0x7FF7A4D2E520 Fallout4.exe+056E520 -> TESObjectREFR::HandleUpdate+0x80
+	[ 8] 0x7FF7A4D31C88 Fallout4.exe+0571C88
+	[ 9] 0x7FF7A4A0E200 Fallout4.exe+024E200 -> BSJobs::JobThread::Run+0xF0
+	[10] 0x7FF7A49F1B38 Fallout4.exe+0231B38
+	[11] 0x7FFE31C44ED0 ucrtbase.dll+0024ED0
+	[12] 0x7FFE33A2E8D7 KERNEL32.DLL+001E8D7
+	[13] 0x7FFE3465BF2C ntdll.dll+005BF2C
+
+REGISTERS:
+	RAX 0x2C8E1A00040      (void*)
+	RCX 0x2C8E1A00040      (void*)
+	RDX 0x0                (size_t) [0]
+	RBX 0x2C8E1A00040      (void*)
+	RSP 0x91D2A80FF8       (void*)
+	RBP 0x91D2A81098       (void*)
+	RSI 0x0                (size_t) [0]
+	RDI 0x2C8D0F55E60      (void*)
+
+STACK:
+	[RSP+0   ] 0x7FF7A4D2E520  (void* -> Fallout4.exe+056E520)
+	[RSP+8   ] 0x2C8E1A00040   (void*)
+	[RSP+10  ] 0x7FF7A4D2E4B0  (void* -> Fallout4.exe+056E4B0)
+	[RSP+18  ] 0x2C8E1A00040   (void*)
+	[RSP+20  ] 0x7FF7A4D2E520  (void* -> Fallout4.exe+056E520)
+	[RSP+28  ] 0x2C8E1A00040   (void*)
+	[RSP+30  ] 0x7FF7A4D2E4B0  (void* -> Fallout4.exe+056E4B0)
+
+MODULES:
+	Fallout4.exe                 0x7FF7A47C0000
+	f4se_1_11_191.dll            0x7FFE0F2A0000
+	Buffout4.dll                 0x7FFE0D410000
+	f4ee.dll                     0x7FFE0C880000
+	ucrtbase.dll                 0x7FFE31C20000
+	KERNEL32.DLL                 0x7FFE33A10000
+	ntdll.dll                    0x7FFE34600000
+
+F4SE PLUGINS:
+	Buffout4.dll v1.28.6
+	f4ee.dll v1.0.18
+	mcm.dll v1.39
+	GCBugFix.dll
+
+PLUGINS:
+	[00] Fallout4.esm
+	[01] DLCRobot.esm
+	[02] DLCworkshop01.esm
+	[03] DLCCoast.esm
+	[04] DLCworkshop02.esm
+	[05] DLCworkshop03.esm
+	[06] DLCNukaWorld.esm
+	[07] Unofficial Fallout 4 Patch.esp
+	[08] ArmorKeywords.esm
+	[09] HUDFramework.esm
+	[0A] NAC-X.esp
+	[0B] LooksMenu.esp
+	[0C] SettlementKeywords.esm
+	[0D] BostonFPSFixAIO.esp
+	[0E] ScrapEverything.esp
+	[0F] InfiniteRecursionQuest.esp
+	[FE:000] CraftingFramework.esl
+	[FE:001] QuickTradeRedux.esl

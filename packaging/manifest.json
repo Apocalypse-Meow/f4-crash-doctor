@@ -1,0 +1,56 @@
+{
+  "$schema": "https://raw.githubusercontent.com/anthropics/mcpb/main/schemas/mcpb-manifest-v0.4.schema.json",
+  "manifest_version": "0.4",
+  "name": "f4-crash-doctor",
+  "display_name": "F4 Crash Doctor",
+  "version": "0.1.0",
+  "description": "Diagnoses Fallout 4 crashes and mod problems. Advisory-only: it reads your crash logs and load order, explains the cause, and never touches your files.",
+  "long_description": "Your modded Fallout 4 crashed? F4 Crash Doctor gives Claude everything it needs to work out why: it finds and parses Buffout 4 crash logs, reads your load order, checks F4SE / Address Library / game-version health, detects whether MO2 or Vortex manages your game, and matches it all against a knowledge pack of known Fallout 4 crash causes.\n\n**Advisory-only by design** — every tool is read-only. It diagnoses and explains; you stay in control of every change. Optional: add your Nexus Mods API key to let it look up mod pages for you.",
+  "author": { "name": "Alex Naughton", "email": "alexnaughton28@live.com.au" },
+  "server": {
+    "type": "uv",
+    "entry_point": "server/src/f4_crash_doctor/server.py",
+    "mcp_config": {
+      "command": "uv",
+      "args": ["run", "--directory", "${__dirname}/server", "f4-crash-doctor"],
+      "env": {
+        "F4_GAME_ROOT": "${user_config.game_dir}",
+        "NEXUS_API_KEY": "${user_config.nexus_api_key}"
+      }
+    }
+  },
+  "user_config": {
+    "game_dir": {
+      "type": "directory",
+      "title": "Fallout 4 install folder (optional)",
+      "description": "Leave empty to auto-detect from your Steam libraries. Only set this if detection fails — pick the folder containing Fallout4.exe.",
+      "required": false,
+      "default": ""
+    },
+    "nexus_api_key": {
+      "type": "string",
+      "title": "Nexus Mods API key (optional)",
+      "description": "Enables mod-page lookups. Get yours at nexusmods.com > site preferences > API keys. Everything else works without it.",
+      "sensitive": true,
+      "required": false,
+      "default": ""
+    }
+  },
+  "tools": [
+    { "name": "list_crash_logs", "description": "List Buffout 4 crash logs, newest first" },
+    { "name": "get_crash_log", "description": "Parse a crash log into structured sections" },
+    { "name": "get_load_order", "description": "Read the load order and cross-check it against Data" },
+    { "name": "scan_game_environment", "description": "Check game / F4SE / Address Library versions and detect mod managers" },
+    { "name": "diagnose_crash", "description": "One-shot diagnosis: parse log + scan environment + match known crash signatures" },
+    { "name": "lookup_mod", "description": "Look up a mod on Nexus Mods (read-only, needs API key)" },
+    { "name": "check_nexus_auth", "description": "Verify the Nexus API key works" }
+  ],
+  "prompts": [
+    { "name": "diagnose-fallout4-crash", "description": "Diagnosis workflow and advisory-only phrasing rules", "text": "Use the f4-crash-doctor tools to diagnose the user's Fallout 4 crash, following the bundled prompt kit." }
+  ],
+  "keywords": ["fallout 4", "modding", "crash", "diagnosis", "buffout", "f4se", "nexus"],
+  "compatibility": {
+    "platforms": ["win32"],
+    "runtimes": { "python": ">=3.11" }
+  }
+}

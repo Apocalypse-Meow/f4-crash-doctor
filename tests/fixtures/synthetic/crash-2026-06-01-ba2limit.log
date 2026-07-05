@@ -1,0 +1,106 @@
+Fallout 4 v1.11.191
+Buffout 4 v1.28.6
+
+Unhandled exception "EXCEPTION_ACCESS_VIOLATION" at 0x7FF7A5F0C2A0 Fallout4.exe+174C2A0
+
+SETTINGS:
+	[Compatibility]
+	    F4EE: true
+	[Fixes]
+	    ActorIsHostileToActor: true
+	    CellInit: true
+	    EncounterZoneReset: true
+	    SafeExit: true
+	[Patches]
+	    Achievements: true
+	    MaxStdIO: 2048
+	    MemoryManager: true
+	    ScaleformAllocator: true
+	    SmallBlockAllocator: true
+	[Warnings]
+	    CreateTexture2D: true
+	    ImageSpaceAdapter: true
+
+SYSTEM SPECS:
+	OS: Microsoft Windows 11 Home v10.0.26200
+	CPU: AuthenticAMD AMD Ryzen 7 5800X3D 8-Core Processor
+	GPU #1: Nvidia GA102 [GeForce RTX 3090]
+	GPU #2: Microsoft Basic Render Driver
+	PHYSICAL MEMORY: 24.11 GB/31.92 GB
+
+PROBABLE CALL STACK:
+	[ 0] 0x7FF7A5F0C2A0 Fallout4.exe+174C2A0 -> BSResource::LooseFileAsyncStream::DoOpen+0x40
+	[ 1] 0x7FF7A5F0B1D4 Fallout4.exe+174B1D4 -> BSResource::LooseFileAsyncStream::DoRead+0x184
+	[ 2] 0x7FF7A5EF88C0 Fallout4.exe+17388C0 -> BSResource::AsyncStream::Read+0x30
+	[ 3] 0x7FF7A5E120F8 Fallout4.exe+16520F8 -> BSResource::Archive2::Index::EntryHeader+0xC8
+	[ 4] 0x7FF7A5E0F444 Fallout4.exe+164F444
+	[ 5] 0x7FF7A4B22910 Fallout4.exe+0362910 -> BSTextureStreamer::Manager::ProcessLoads+0x2A0
+	[ 6] 0x7FF7A4B21D5C Fallout4.exe+0361D5C
+	[ 7] 0x7FF7A4A0E200 Fallout4.exe+024E200 -> BSJobs::JobThread::Run+0xF0
+	[ 8] 0x7FF7A49F1B38 Fallout4.exe+0231B38
+	[ 9] 0x7FFE31C44ED0 ucrtbase.dll+0024ED0
+	[10] 0x7FFE33A2E8D7 KERNEL32.DLL+001E8D7
+	[11] 0x7FFE3465BF2C ntdll.dll+005BF2C
+
+REGISTERS:
+	RAX 0x0                (size_t) [0]
+	RCX 0x2A6F1E45C80      (void*)
+	RDX 0x140              (size_t) [320]
+	RBX 0x2A6F1E45C00      (void*)
+	RSP 0x91D2B7ECF0       (void*)
+	RBP 0x91D2B7ED90       (void*)
+	RSI 0x0                (size_t) [0]
+	RDI 0x2A6E0A11A40      (void*)
+	R8  0x1                (size_t) [1]
+	R9  0x2A6F1E45CB8      (void*)
+
+STACK:
+	[RSP+0   ] 0x7FF7A5F0B1D4  (void* -> Fallout4.exe+174B1D4)
+	[RSP+8   ] 0x2A6F1E45C80   (void*)
+	[RSP+10  ] 0x140           (size_t) [320]
+	[RSP+18  ] 0x2A6E0A11A40   (void*)
+	[RSP+20  ] 0x7FF7A5EF88C0  (void* -> Fallout4.exe+17388C0)
+	[RSP+28  ] 0x0             (size_t) [0]
+	[RSP+30  ] 0x2A6F1E45C00   (void*)
+	[RSP+38  ] 0x7FF7A5E120F8  (void* -> Fallout4.exe+16520F8)
+	[RSP+40  ] 0x91D2B7ED90    (void*)
+	[RSP+48  ] 0x7FF7A4B22910  (void* -> Fallout4.exe+0362910)
+
+MODULES:
+	Fallout4.exe                 0x7FF7A47C0000
+	f4se_1_11_191.dll            0x7FFE0F2A0000
+	Buffout4.dll                 0x7FFE0D410000
+	f4ee.dll                     0x7FFE0C880000
+	ucrtbase.dll                 0x7FFE31C20000
+	KERNEL32.DLL                 0x7FFE33A10000
+	ntdll.dll                    0x7FFE34600000
+	d3d11.dll                    0x7FFE2F1B0000
+	nvwgf2umx.dll                0x7FFE1A000000
+
+F4SE PLUGINS:
+	Buffout4.dll v1.28.6
+	f4ee.dll v1.0.18
+	HighFPSPhysicsFix.dll v0.8.9
+	mcm.dll v1.39
+
+PLUGINS:
+	[00] Fallout4.esm
+	[01] DLCRobot.esm
+	[02] DLCworkshop01.esm
+	[03] DLCCoast.esm
+	[04] DLCworkshop02.esm
+	[05] DLCworkshop03.esm
+	[06] DLCNukaWorld.esm
+	[07] Unofficial Fallout 4 Patch.esp
+	[08] ArmorKeywords.esm
+	[09] HUDFramework.esm
+	[0A] NAC-X.esp
+	[0B] LooksMenu.esp
+	[0C] TrueStormsFO4.esm
+	[0D] SettlementKeywords.esm
+	[0E] BostonFPSFixAIO.esp
+	[0F] EveryonesBestFriend.esp
+	[10] KeyNuker.esp
+	[FE:000] CraftingFramework.esl
+	[FE:001] QuickTradeRedux.esl
+	[FE:002] WhiteCaseMod.esl

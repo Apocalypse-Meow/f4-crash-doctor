@@ -1,0 +1,309 @@
+[
+  {
+    "id": "SIG-ADDRLIB-MISMATCH",
+    "name": "Address Library does not match the game version",
+    "severity": 6,
+    "confidence": "high",
+    "scopes": [],
+    "conditions": ["address_library_mismatch"],
+    "cause": "The Address Library is a lookup file that most F4SE plugins use to find their way around the game's program code. Each Address Library file is built for one exact game version, so after a game update (or a downgrade) the old file points at the wrong places in memory. When that happens, F4SE mods misfire and the game crashes, often right at startup or seemingly at random.",
+    "fix": "Download the Address Library build that matches your exact game version from its Nexus page (mod 47327) and install it with your mod manager, replacing the old one. You can check your game version by right-clicking Fallout4.exe, choosing Properties, then the Details tab. If your game just updated, some F4SE mods may also need updates before things are stable again.",
+    "sources": [
+      "https://www.nexusmods.com/fallout4/mods/47327",
+      "https://wiki.fireundubh.com/fallout4/buffout-faqs"
+    ]
+  },
+  {
+    "id": "SIG-F4SE-VERSION",
+    "name": "F4SE version does not match the game version (background knowledge)",
+    "severity": 5,
+    "confidence": "medium",
+    "scopes": [],
+    "conditions": [],
+    "cause": "F4SE (the Fallout 4 Script Extender) is the loader that makes most advanced mods possible, and every F4SE release is locked to one exact game version. If Steam updates the game, the old F4SE stops working: the game either refuses to launch through the loader, launches without mods, or crashes early. This entry is background knowledge for the diagnosis workflow rather than a pattern matched from the crash log itself.",
+    "fix": "Compare your game version (right-click Fallout4.exe, Properties, Details tab) against the F4SE version you have installed, and grab the matching F4SE build from f4se.silverlock.org or its Nexus page if they differ. After a game update, also expect to update the Address Library and some F4SE plugin mods. If you deliberately run an older game version, make sure every one of those pieces targets that same version.",
+    "sources": [
+      "https://f4se.silverlock.org/",
+      "https://www.nexusmods.com/fallout4/mods/42147"
+    ]
+  },
+  {
+    "id": "SIG-MISSING-MASTER",
+    "name": "Enabled plugin is missing a required file (missing master)",
+    "severity": 5,
+    "confidence": "high",
+    "scopes": [],
+    "conditions": ["plugins_missing_from_data"],
+    "cause": "Your load order lists plugins as enabled that are not actually present in the game's Data folder. Mod plugins often depend on other plugins (called their 'masters'), and if a required file is missing or disabled the game typically crashes at the main menu or the moment you load a save. This usually happens after uninstalling a mod that something else still depends on, or when a mod manager's deployment got out of sync.",
+    "fix": "Look at the file names listed in the evidence for this finding. For each one, either reinstall the mod that provides it or disable the plugins that require it, using your mod manager. If you use Vortex, run a deployment (Purge then Deploy can resync a confused state); if you use MO2, check that the plugin is enabled in the right profile. Avoid saving your game until the load order is consistent again.",
+    "sources": [
+      "https://wiki.fireundubh.com/fallout4/buffout-faqs"
+    ]
+  },
+  {
+    "id": "SIG-WEAPON-DEBRIS-NVFLEX",
+    "name": "Weapon Debris crash on RTX graphics cards",
+    "severity": 5,
+    "confidence": "high",
+    "scopes": [
+      { "scope": "call_stack", "any_of": ["flexRelease_x64.dll"] }
+    ],
+    "conditions": [],
+    "cause": "The crash happened inside NVIDIA Flex (flexRelease_x64.dll), the physics library behind the 'Weapon Debris' graphics setting. That library predates NVIDIA's RTX cards and is broken on them, so with Weapon Debris enabled the game crashes during combat, usually when shooting near surfaces. This is a stock game bug, not a mod problem.",
+    "fix": "Open the Fallout 4 launcher options (or your settings tool) and set Weapon Debris to Off, then test in combat again. If you want to keep the effect, install a fix mod such as 'Weapon Debris Crash Fix' from Nexus instead. No other changes to your mod list should be needed for this particular crash.",
+    "sources": [
+      "https://www.nexusmods.com/fallout4/mods/48078",
+      "https://wiki.fireundubh.com/fallout4/buffout-faqs"
+    ]
+  },
+  {
+    "id": "SIG-NVIDIA-DRIVER",
+    "name": "NVIDIA graphics driver crash",
+    "severity": 4,
+    "confidence": "medium",
+    "scopes": [
+      { "scope": "call_stack", "any_of": ["nvwgf2umx.dll"], "min_count": 2 }
+    ],
+    "conditions": [],
+    "cause": "The crash call stack is dominated by nvwgf2umx.dll, which is the NVIDIA graphics driver itself. That points at the driver rather than a specific mod: common triggers are a buggy driver release, an overlay injecting into the game (GeForce Experience, Discord, Steam overlay), or an unstable GPU or memory overclock. Heavy texture mods can make a marginal card fall over sooner, but the driver is where it died.",
+    "fix": "Update your NVIDIA driver, or if you updated recently, roll back to the previous stable version. Disable overlays one at a time (GeForce/NVIDIA App overlay, Discord, Steam) and test. If the card or its memory is overclocked, return it to stock speeds while testing, since Fallout 4 is good at exposing marginal overclocks. If crashes persist, a clean driver reinstall is the next step.",
+    "sources": [
+      "https://wiki.fireundubh.com/fallout4/buffout-faqs"
+    ]
+  },
+  {
+    "id": "SIG-D3D11-WRAPPER",
+    "name": "DirectX wrapper or injector (ENB and similar) involved in crash",
+    "severity": 3,
+    "confidence": "medium",
+    "scopes": [
+      { "scope": "call_stack", "any_of": ["d3d11.dll"] }
+    ],
+    "conditions": [],
+    "cause": "The crash involves d3d11.dll, the DirectX 11 graphics layer. In a modded install this file in the game folder is often not Microsoft's copy but a wrapper placed there by ENB, ReShade, or an upscaler bridge, and an outdated or conflicting wrapper is a common crash source. Two injectors trying to hook the same game at once is a classic culprit.",
+    "fix": "Check your Fallout 4 game folder for files like d3d11.dll, d3dcompiler_46e.dll, or dxgi.dll that came from ENB or ReShade. Temporarily move them out of the folder (do not delete them) and test; if the game is stable, update the ENB or ReShade binaries to the latest version before putting them back. If you run more than one injector, try running only one at a time.",
+    "sources": [
+      "http://enbdev.com/download_mod_fallout4.htm",
+      "https://wiki.fireundubh.com/fallout4/buffout-faqs"
+    ]
+  },
+  {
+    "id": "SIG-BA2-LIMIT",
+    "name": "Too many BA2 archives (archive handle limit)",
+    "severity": 6,
+    "confidence": "high",
+    "scopes": [
+      { "scope": "call_stack", "any_of": ["LooseFileAsyncStream"] }
+    ],
+    "conditions": [],
+    "cause": "The crash points at LooseFileAsyncStream, the classic sign that the game ran out of slots for open .ba2 archive files. Almost every mod ships its content in one or two .ba2 archives, and the engine can only keep a limited number open at once; big mod lists blow past that cap and the game dies while loading, often on startup or when entering a new area. The 2024 'next-gen' update raised the cap, but it is still a hard limit.",
+    "fix": "Reduce the number of .ba2 archives the game has to open. Uninstall mods you no longer use, and for texture mods consider versions that combine files into fewer archives. Some guides describe repacking multiple small mod archives into one; that is an advanced step, so start by simply trimming the mod list and re-testing. Counting the .ba2 files in your Data folder tells you how close to the limit you are.",
+    "sources": [
+      "https://wiki.fireundubh.com/fallout4/buffout-faqs",
+      "https://www.nexusmods.com/fallout4/mods/47359"
+    ]
+  },
+  {
+    "id": "SIG-TEXTURE-DDS",
+    "name": "Broken or badly converted texture file",
+    "severity": 4,
+    "confidence": "medium",
+    "scopes": [
+      { "scope": "call_stack", "any_of": ["Create2DTexture", "DefaultTexture"] }
+    ],
+    "conditions": [],
+    "cause": "The crash happened while the game was creating a texture, which usually means a texture mod contains a broken .dds file. Common problems are textures saved in a compression format the game does not accept, or images whose width or height is not divisible by 4, which the game's compressed formats require. The crash tends to happen when the object using the bad texture first appears.",
+    "fix": "Think about which texture mods you installed or updated most recently and disable them one at a time in your mod manager until the crash stops. Check the mod's Nexus comment section, since other users usually report the same broken file. If you made the texture yourself, re-save it in a supported BC format with dimensions divisible by 4.",
+    "sources": [
+      "https://wiki.fireundubh.com/fallout4/buffout-faqs"
+    ]
+  },
+  {
+    "id": "SIG-MESH-NIF",
+    "name": "Broken 3D model (mesh) file",
+    "severity": 4,
+    "confidence": "medium",
+    "scopes": [
+      { "scope": "call_stack", "any_of": ["BSFadeNode", "BSMultiBoundNode"] }
+    ],
+    "conditions": [],
+    "cause": "The crash involves the game's 3D model machinery (BSFadeNode / BSMultiBoundNode), which typically means a mod's .nif mesh file is malformed or incompatible with your game version. The game crashes when the broken model is loaded, so it often looks location-specific: entering a particular cell, looking at a particular object, or when a certain item or creature spawns.",
+    "fix": "Note where you were and what appeared right before the crash, then disable mods that add or replace models in that area (weapons, clutter, creatures, building kits) one at a time in your mod manager. Reinstalling the suspect mod cleanly is worth trying, since a corrupted download can produce the same symptom. Check the mod page for patches for your game version.",
+    "sources": [
+      "https://wiki.fireundubh.com/fallout4/buffout-faqs"
+    ]
+  },
+  {
+    "id": "SIG-PRECOMBINE-PREVIS",
+    "name": "Broken precombines/previs (often caused by scrap mods)",
+    "severity": 4,
+    "confidence": "medium",
+    "scopes": [
+      { "scope": "call_stack", "any_of": ["BGSLocation", "BGSQueuedTerrainInitialLoad"] }
+    ],
+    "conditions": [],
+    "cause": "Fallout 4 pre-merges much of its world geometry into 'precombines' and pre-computes what is visible ('previs') as a performance system. Mods that let you scrap everything, or that edit city areas without rebuilding this data, break the system; the result is heavy stutter and crashes when entering or looking toward the affected areas, with location machinery (BGSLocation, terrain loading) in the crash stack.",
+    "fix": "If you use a scrap-anything mod (for example Scrap Everything or Spring Cleaning), the reliable fix is to remove it and continue from a save made before it was installed, or start a new game without it. Installing the Previsibines Repair Pack (PRP) rebuilds this data properly and helps performance generally, but it cannot repair a save already broken by scrapping. Load-order patches exist for popular city-overhaul combinations; check the PRP page.",
+    "sources": [
+      "https://www.nexusmods.com/fallout4/mods/46403",
+      "https://wiki.fireundubh.com/fallout4/buffout-faqs"
+    ]
+  },
+  {
+    "id": "SIG-PLUGIN-LIMIT-FF",
+    "name": "Over the plugin limit (plugin loaded at index FF)",
+    "severity": 5,
+    "confidence": "high",
+    "scopes": [],
+    "conditions": ["plugin_ff_index"],
+    "cause": "The crash log shows a plugin sitting at load index FF, which is past the game's cap of 255 full plugins. Anything at or beyond that slot is not loaded correctly, and the engine misbehaves badly once the cap is exceeded, from broken content to outright crashes. Light '.esl' plugins do not count against this cap because they share the special FE slot.",
+    "fix": "Reduce your count of full plugins below 255. In your mod manager, disable plugins you no longer need, and check which of your .esp files are eligible to be converted or flagged as light (ESL) so they move into the shared FE slot; many mod authors offer ESL versions. Merging small patch plugins is another community-standard approach. Recount after each change until nothing sits at FF.",
+    "sources": [
+      "https://wiki.fireundubh.com/fallout4/buffout-faqs"
+    ]
+  },
+  {
+    "id": "SIG-PLUGIN-LIMIT-MEM",
+    "name": "Over the plugin limit (plugin data storage overload)",
+    "severity": 5,
+    "confidence": "high",
+    "scopes": [
+      { "scope": "call_stack", "any_of": ["BSMemStorage", "DataMemStorage"] }
+    ],
+    "conditions": [],
+    "cause": "The crash stack points at the engine's plugin data storage (BSMemStorage / DataMemStorage), a pattern seen when the load order has more plugin data than the game can track, usually from exceeding the 255 full-plugin cap or from a very heavy combination of large plugins. The game tends to crash at the main menu or early in loading when this happens.",
+    "fix": "Count your enabled full plugins (.esm and .esp) and get the total under 255. Disable mods you are not actively using, prefer ESL-flagged versions where mod authors provide them, and consider merging small compatibility patches. If your count is already well under the cap, treat this as a lead rather than a verdict and look at the other findings for this crash.",
+    "sources": [
+      "https://wiki.fireundubh.com/fallout4/buffout-faqs"
+    ]
+  },
+  {
+    "id": "SIG-STACK-OVERFLOW",
+    "name": "Stack overflow (runaway recursion)",
+    "severity": 5,
+    "confidence": "high",
+    "scopes": [
+      { "scope": "exception", "any_of": ["EXCEPTION_STACK_OVERFLOW"] }
+    ],
+    "conditions": [],
+    "cause": "The game hit a stack overflow, which means some piece of code called itself in a loop until it ran out of room. In modded Fallout 4 this is usually two mods reacting to each other endlessly (for example two mods both editing the same scripted event), or a single mod with a scripting bug. It is rarely a hardware or driver problem.",
+    "fix": "Think about which script-heavy mods you added or updated most recently and disable the newest ones first, testing after each change. Check the crash log's call stack for a mod's DLL or a recognizable mod name to narrow it down. If the same two mods keep appearing together in reports on their Nexus pages, look for a compatibility patch or pick one of the two.",
+    "sources": [
+      "https://wiki.fireundubh.com/fallout4/buffout-faqs"
+    ]
+  },
+  {
+    "id": "SIG-NULL-POINTER",
+    "name": "Null pointer crash (generic - needs deeper reading)",
+    "severity": 2,
+    "confidence": "low",
+    "scopes": [
+      {
+        "scope": "exception",
+        "all_of": ["EXCEPTION_ACCESS_VIOLATION"],
+        "any_of": ["0x000000000000"]
+      }
+    ],
+    "conditions": [],
+    "cause": "The game tried to use a piece of data that did not exist (a 'null pointer', shown by the address of all zeros). This is one of the most generic crash patterns there is: something expected an object, form, or file to be present and it was not. On its own it does not identify a culprit.",
+    "fix": "Treat this as a starting point, not an answer. Read further down the probable call stack for recognizable names (a mod's DLL, a game system, a file name) and cross-reference with any other findings for this crash. Recent mod installs, updates, or removals are the usual suspects, so review what changed last.",
+    "sources": [
+      "https://wiki.fireundubh.com/fallout4/buffout-faqs"
+    ]
+  },
+  {
+    "id": "SIG-CORRUPT-SAVE",
+    "name": "Save game problem (often orphaned scripts)",
+    "severity": 4,
+    "confidence": "high",
+    "scopes": [
+      { "scope": "call_stack", "any_of": ["BGSSaveLoadManager"] }
+    ],
+    "conditions": [],
+    "cause": "The crash happened inside the game's save/load system (BGSSaveLoadManager), which usually means the save file itself carries a problem rather than a currently installed mod. The classic cause is removing a script-heavy mod mid-playthrough: its scripts stay baked into the save as 'orphans' and can crash the game on load or during autosaves.",
+    "fix": "First try loading an older save from before the problem started; if that works, the newer saves are the issue. A tool called ReSaver (part of Fallrim Tools on Nexus) can open a save and clean orphaned script data - back up the save file first and follow the tool's documentation carefully. Going forward, avoid uninstalling script-heavy mods in the middle of a playthrough.",
+    "sources": [
+      "https://www.nexusmods.com/fallout4/mods/22633",
+      "https://wiki.fireundubh.com/fallout4/buffout-faqs"
+    ]
+  },
+  {
+    "id": "SIG-SCALEFORM-UI",
+    "name": "User interface (Scaleform/Flash) mod crash",
+    "severity": 4,
+    "confidence": "medium",
+    "scopes": [
+      {
+        "scope": "call_stack",
+        "any_of": ["Scaleform::Gfx::Value", "InstalledContentPanelBackground"]
+      }
+    ],
+    "conditions": [],
+    "cause": "The crash involves Scaleform, the Flash-based system Fallout 4 uses for its menus and HUD. UI mods (things like HUD frameworks, sorting mods, or menu replacers) ship Flash files that can fall out of date after a game update or conflict with each other, and the game crashes when the affected menu or HUD element is drawn.",
+    "fix": "Update your UI mods to versions that match your game version, checking their Nexus pages for post-update patches. If everything claims to be current, disable UI mods one at a time in your mod manager, starting with the most recently installed, until the crash stops. Watch for two mods editing the same menu; usually one of them offers a compatibility patch.",
+    "sources": [
+      "https://wiki.fireundubh.com/fallout4/buffout-faqs"
+    ]
+  },
+  {
+    "id": "SIG-DOWNGRADE-MISMATCH",
+    "name": "Game version and game files out of sync (downgrade/update mismatch)",
+    "severity": 4,
+    "confidence": "medium",
+    "scopes": [
+      { "scope": "call_stack", "any_of": ["LoadScreenTranslucent.nif"] }
+    ],
+    "conditions": [],
+    "cause": "The crash references LoadScreenTranslucent.nif, a load-screen asset tied to the 2024 'next-gen' update. Seeing it in a crash usually means your game executable and your game content are from different generations - for example a downgraded .exe still reading next-gen files, or a partially applied update. The mismatch shows up as crashes on load screens or at startup.",
+    "fix": "Decide which generation you want to run and make it consistent. If you downgraded, use a well-maintained downgrader that reverts the content archives as well as the .exe, not just one piece. If you want the current version, verify game files in Steam so everything updates together, then update F4SE, the Address Library, and your F4SE mods to match.",
+    "sources": [
+      "https://wiki.fireundubh.com/fallout4/buffout-faqs"
+    ]
+  },
+  {
+    "id": "SIG-AUDIO-XAUDIO",
+    "name": "Audio system crash (old DirectX audio or bad sound files)",
+    "severity": 3,
+    "confidence": "medium",
+    "scopes": [
+      { "scope": "call_stack", "any_of": ["X3DAudio1_7.dll", "XAudio2_7.dll"] }
+    ],
+    "conditions": [],
+    "cause": "The crash happened in the game's audio layer (X3DAudio/XAudio), which belongs to an older generation of DirectX that Windows no longer includes by default. Two common causes: the legacy 'DirectX End-User Runtime (June 2010)' is missing from the system, or a sound mod ships audio files in a format the game cannot digest.",
+    "fix": "Install Microsoft's DirectX End-User Runtime (June 2010) - it is a free download from Microsoft and coexists safely with modern DirectX. If the runtime is already installed, review recently added sound, music, or voice mods and disable them one at a time in your mod manager. Badly converted audio in a single mod is enough to cause this.",
+    "sources": [
+      "https://www.microsoft.com/en-us/download/details.aspx?id=8109",
+      "https://wiki.fireundubh.com/fallout4/buffout-faqs"
+    ]
+  },
+  {
+    "id": "SIG-BODY-PHYSICS",
+    "name": "Body physics or skeleton mod mismatch",
+    "severity": 3,
+    "confidence": "medium",
+    "scopes": [
+      { "scope": "call_stack", "any_of": ["cbp.dll", "skeleton.nif"] }
+    ],
+    "conditions": [],
+    "cause": "The crash points at body physics (cbp.dll) or a character skeleton file (skeleton.nif). Body physics mods are F4SE plugins locked to specific game versions, and they also depend on an extended skeleton being installed and loaded in the right order. A physics DLL built for a different game version, or a body mod overwriting the skeleton, produces crashes when characters load.",
+    "fix": "Check that your physics mod (CBP/OCBP/OCBPC or similar) explicitly supports your game version, and update or disable it in your mod manager if not. Make sure you have exactly one extended-skeleton mod and that nothing overwrites it - in MO2 check the conflict flags, in Vortex check the file rules. Reinstalling the body mod after the skeleton usually resolves overwrite problems.",
+    "sources": [
+      "https://wiki.fireundubh.com/fallout4/buffout-faqs"
+    ]
+  },
+  {
+    "id": "SIG-CC-ACTIVE-EFFECTS",
+    "name": "Possible Creation Club / active effects crash (weak signal)",
+    "severity": 2,
+    "confidence": "low",
+    "scopes": [
+      { "scope": "exception", "any_of": ["0x000100000000"] }
+    ],
+    "conditions": [],
+    "cause": "The crash address matches a pattern the community loosely associates with Creation Club content and active magic/chem effects on the player. It is a weak signal: the same address pattern can appear for unrelated reasons, so this finding alone should not drive any changes.",
+    "fix": "Treat this as a hint only. If you recently added Creation Club items, or the crash consistently happens with certain buffs, chems, or equipped CC gear active, test with those removed or the effects expired. Give more weight to any higher-confidence findings reported for this same crash before acting on this one.",
+    "sources": [
+      "https://wiki.fireundubh.com/fallout4/buffout-faqs"
+    ]
+  }
+]
