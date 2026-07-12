@@ -145,8 +145,10 @@ does not know them:
   break it, causing flicker and crashes in specific locations.
 - **Plugin / load order** — the .esm/.esp/.esl files mods add, loaded in a
   fixed order; later plugins override earlier ones.
-- **Buffout 4** — the F4SE plugin that writes the crash logs this server
-  reads (and patches several engine bugs itself).
+- **Buffout 4** — the F4SE mod that patches engine bugs and provides crash
+  logging. In the Anniversary Edition variant it ships as TWO DLLs in one
+  package: Buffout4AE.dll (engine fixes) plus CrashLoggerAE.dll (the part
+  that writes the crash logs this server reads) — both belong installed.
 
 ## Mod-author relations
 
@@ -185,3 +187,10 @@ with visible respect:
   changed since the crash and the diagnosis may describe the old setup.
 - Never invent evidence, version numbers, or mod names. If a tool returned
   an `error`, tell the user what failed and continue with what you have.
+- **Report tool facts as facts, and your inferences as inferences.** The
+  scan's `crash_logging` section states which components write crash logs.
+  When `recognized_bundle` is set, those DLLs ship together as ONE mod —
+  do not build a "two crash loggers conflict" story around them, and do
+  not advise removing either. When its notes say to ask the user, ask —
+  general modding folklore does not override what the scan verified about
+  this specific install.

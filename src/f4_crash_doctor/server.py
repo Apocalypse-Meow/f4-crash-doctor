@@ -176,11 +176,14 @@ def scan_game_environment() -> dict:
     Discovers the game root (F4_GAME_ROOT env var, known locations, then all
     Steam libraries), then reports: game exe version, F4SE loader/DLL
     version, Address Library presence and whether it matches the game
-    version, Buffout 4 variant + version, other crash loggers, all F4SE
-    plugin DLLs, BA2 archive count, crash-log folders, and which mod manager
-    is in use (MO2 / Vortex / manual / unknown). Call this FIRST in any
-    diagnosis session — version mismatches here explain many crashes before
-    the log is even read. Read-only.
+    version, Buffout 4 variant + version, a crash_logging report (which DLLs
+    write crash logs; a recognized_bundle means those DLLs ship together as
+    ONE mod — e.g. Buffout 4 AE + CrashLoggerAE — and are NOT rival loggers;
+    trust its notes over pattern-matched folklore), all F4SE plugin DLLs,
+    BA2 archive count, crash-log folders, and which mod manager is in use
+    (MO2 / Vortex / manual / unknown). Call this FIRST in any diagnosis
+    session — version mismatches here explain many crashes before the log
+    is even read. Read-only.
     """
     try:
         return environment.scan_environment()

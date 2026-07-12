@@ -77,14 +77,14 @@ def test_scan_environment_fake_install(tmp_path, monkeypatch):
     assert env["buffout4"]["installed"] is True
     assert env["buffout4"]["variant"] == "AE"
 
-    assert "CrashLoggerAE.dll" in env["other_crash_loggers"]
+    assert env["crash_logging"]["crash_logger_dlls"] == ["CrashLoggerAE.dll"]
     assert "Buffout4AE.dll" in env["f4se_plugin_dlls"]
     assert env["ba2_count"] == 2
 
     # every promised key is present
     for key in (
         "game_root", "game_exe_version", "f4se", "address_library", "buffout4",
-        "other_crash_loggers", "f4se_plugin_dlls", "ba2_count", "documents_dir",
+        "crash_logging", "f4se_plugin_dlls", "ba2_count", "documents_dir",
         "crash_log_dirs_checked", "crash_log_count", "managers", "warnings",
     ):
         assert key in env

@@ -545,6 +545,96 @@ def detect_managers(
 # full environment scan
 # ---------------------------------------------------------------------------
 
+# 'Buffout 4 - Anniversary Edition' (Nexus mod 99911) ships Buffout4AE.dll
+# (engine fixes/patches) and CrashLoggerAE.dll (the crash-log writer) in ONE
+# archive, plus Fallout4.pdb + msdia140.dll for symbolication. Reporting the
+# pair as rival "other crash loggers" once led a client model to advise
+# deleting the log writer — the field name was the prompt. Recognize the
+# pairing instead, and keep every note here free of removal directives.
+
+
+def crash_logging_report(
+    f4se_plugin_dlls: list[str], buffout_variant: str | None
+) -> dict:
+    """Describe how this install produces crash logs.
+
+    Returns {"crash_logger_dlls": [...], "recognized_bundle": str | None,
+    "notes": [...]}. Notes are written for the client model: recognized
+    pairings are stated as one package (not a conflict), genuinely
+    independent logger combinations become a confirm-with-the-user note,
+    and removal advice is never generated here.
+    """
+    loggers = [n for n in f4se_plugin_dlls if "crashlogger" in n.lower()]
+    notes: list[str] = []
+    recognized_bundle: str | None = None
+
+    ae_companion = next(
+        (n for n in loggers if n.lower() == "crashloggerae.dll"), None
+    )
+    if buffout_variant == "AE" and ae_companion is not None:
+        independent = [n for n in loggers if n is not ae_companion]
+    else:
+        independent = list(loggers)
+
+    if buffout_variant == "AE":
+        if ae_companion is not None:
+            recognized_bundle = (
+                "Buffout 4 - Anniversary Edition (Nexus mod 99911): "
+                f"Buffout4AE.dll = engine fixes and patches, {ae_companion} "
+                "= crash-log writer"
+            )
+            notes.append(
+                f"Buffout4AE.dll and {ae_companion} are two components of ONE "
+                "mod ('Buffout 4 - Anniversary Edition'). Seeing both is the "
+                "normal, correct install — this is not a conflict, and "
+                f"neither file should be removed. {ae_companion} is the "
+                "component that writes the crash-*.log files this server "
+                "reads."
+            )
+        else:
+            notes.append(
+                "Buffout4AE.dll is present without its companion "
+                "CrashLoggerAE.dll — the 'Buffout 4 - Anniversary Edition' "
+                "package normally ships both, and CrashLoggerAE.dll is the "
+                "component that writes crash logs. Crashes may not produce "
+                "logs; suggest the user verify their Buffout 4 AE install is "
+                "complete."
+            )
+    elif buffout_variant == "OG" and not loggers:
+        notes.append(
+            "Crash logging is provided by Buffout 4 itself (the classic "
+            "variant includes its own crash logger)."
+        )
+
+    if independent:
+        if buffout_variant is not None:
+            notes.append(
+                f"Buffout 4 ({buffout_variant} variant) and "
+                f"{', '.join(independent)} appear to be independent crash "
+                "loggers installed together. Two independent crash handlers "
+                "can interfere, but do not advise removal from here — ask "
+                "the user which one they intend to use, and check both mods' "
+                "documentation before suggesting any change."
+            )
+        else:
+            notes.append(
+                f"Crash logging is provided by {', '.join(independent)}."
+            )
+
+    if buffout_variant is None and not loggers:
+        notes.append(
+            "No crash-logging plugin detected (no Buffout 4, no Crash "
+            "Logger): the game will not write crash-*.log files when it "
+            "crashes, so crashes cannot be diagnosed from logs until one is "
+            "installed."
+        )
+
+    return {
+        "crash_logger_dlls": loggers,
+        "recognized_bundle": recognized_bundle,
+        "notes": notes,
+    }
+
 
 def scan_environment(
     game_root: Path | None = None, profile: dict | None = None
@@ -595,7 +685,13 @@ def scan_environment(
     # --- Data / F4SE plugin directory ---
     address_library: dict = {"present": False, "versions": [], "matches_game": None}
     buffout4: dict = {"installed": False, "variant": None, "version": None}
-    other_crash_loggers: list[str] = []
+    # empty-notes default: when the plugin dir is unknown, say nothing rather
+    # than diagnose an absence that was never actually observed
+    crash_logging: dict = {
+        "crash_logger_dlls": [],
+        "recognized_bundle": None,
+        "notes": [],
+    }
     f4se_plugin_dlls: list[str] = []
     ba2_count: int | None = None
 
@@ -612,9 +708,6 @@ def scan_environment(
                         f"{m.group(1)}.{m.group(2)}.{m.group(3)}"
                     )
             f4se_plugin_dlls = _glob_names(plugins_dir, "*.dll")
-            other_crash_loggers = [
-                n for n in f4se_plugin_dlls if "crashlogger" in n.lower()
-            ]
             dlls_lower = {n.lower() for n in f4se_plugin_dlls}
             if "buffout4ae.dll" in dlls_lower:
                 buffout4["installed"] = True
@@ -622,6 +715,9 @@ def scan_environment(
             elif "buffout4.dll" in dlls_lower:
                 buffout4["installed"] = True
                 buffout4["variant"] = "OG"
+            crash_logging = crash_logging_report(
+                f4se_plugin_dlls, buffout4["variant"]
+            )
         else:
             warnings.append(f"F4SE plugin dir not found: {plugins_dir}")
     elif game_root is not None:
@@ -666,7 +762,7 @@ def scan_environment(
         "f4se": f4se,
         "address_library": address_library,
         "buffout4": buffout4,
-        "other_crash_loggers": other_crash_loggers,
+        "crash_logging": crash_logging,
         "f4se_plugin_dlls": f4se_plugin_dlls,
         "ba2_count": ba2_count,
         "documents_dir": str(docs),

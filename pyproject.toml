@@ -1,6 +1,6 @@
 [project]
 name = "f4-crash-doctor"
-version = "0.1.0"
+version = "0.1.1"
 description = "Advisory-only Fallout 4 crash diagnosis MCP server (F4 Crash Doctor) — reads Buffout 4 crash logs, load order and game environment; never writes files"
 readme = "README.md"
 requires-python = ">=3.11"
