@@ -48,6 +48,12 @@ Windows refuses the drop with a 🚫 cursor when it doesn't know the `.mcpb` fil
 (game folder — leave empty to auto-detect; Nexus API key — skip unless you want mod lookups), and
 you're done. Skip straight to **First use** below.
 
+**Updating from an older version:** don't install over the top — Windows locks the running
+version's files and the install fails (EBUSY). Instead: **Settings → Extensions → remove the old
+F4 Crash Doctor → Install Extension…** with the new file → then fully restart Claude Desktop
+(quit from the system-tray icon, not just the window) so the new server starts. Start a **new
+conversation** after updating — an old chat will keep reasoning from the old version's answers.
+
 ### Manual install (Claude Code, other MCP clients, or if you prefer a terminal)
 
 1. Download or clone this repository somewhere permanent, e.g. `C:\Tools\f4-crash-doctor`.
