@@ -38,7 +38,9 @@ You do **not** need to install Python yourself — uv handles it.
 
 ### Easiest: the one-file bundle (Claude Desktop)
 
-Download `f4-crash-doctor.mcpb` from the [latest release](https://github.com/Apocalypse-Meow/f4-crash-doctor/releases/latest), then in Claude Desktop open
+Download `f4-crash-doctor.mcpb` from the [latest release](https://github.com/Apocalypse-Meow/f4-crash-doctor/releases/latest)
+— on the release page, click the small **Assets** row under the notes to expand it; the `.mcpb`
+file is listed there (not in the release text itself). Then in Claude Desktop open
 **Settings → Extensions → Advanced settings** and click **Install Extension…** — pick the
 downloaded file. (Drag-and-dropping the file onto the Extensions page works on some machines, but
 Windows refuses the drop with a 🚫 cursor when it doesn't know the `.mcpb` file type — the
