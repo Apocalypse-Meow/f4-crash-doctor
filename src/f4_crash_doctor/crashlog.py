@@ -37,6 +37,19 @@ _EXCEPTION_RE = re.compile(
     r"(?:\s+(\S+)\+([0-9A-Fa-f]+))?"
 )
 _MODULE_OFFSET_RE = re.compile(r"^(\S+)\+([0-9A-Fa-f]+)$")
+# Leading "MODULE+OFFSET" when the frame carries a disassembly/symbol tail.
+_FRAME_MODULE_RE = re.compile(r"^(\S+?)\+([0-9A-Fa-f]+)(?:\s|$)")
+# The demangled name after the pipe:
+#   "... |  BSJobs::JobThread::RunJob(void)_1B51432"
+#   "... |  BSPointerHandleManagerInterface<Actor,HandleManager>::GetSmartPointer(...)"
+# TEMPLATE ARGUMENTS MUST BE ALLOWED. A first version required "::" immediately
+# after a plain identifier, which stops at the "<" of a templated class and then
+# fails to find "::" at all -- dropping the name entirely. Measured on the
+# 400-log corpus that silently lost 151 names, including
+# BSPointerHandleManagerInterface (59 frames), a known handle-exhaustion crash.
+# The 3-character floor keeps stray single letters ("E", "F") out.
+_IDENT = r"[A-Za-z_][A-Za-z0-9_]{2,}(?:<[^>|]*>)?"
+_FRAME_FUNCTION_RE = re.compile(rf"\|\s*({_IDENT}(?:::~?{_IDENT})*)")
 _CALL_STACK_FRAME_RE = re.compile(
     r"^\[\s*(\d+)\]\s+(0x[0-9A-Fa-f]+)(?:\s+(.*))?$"
 )
@@ -194,12 +207,30 @@ def _parse_call_stack(lines: list[str]) -> list[dict]:
             parts = re.split(r"\s*->\s*", rest, maxsplit=1)
             mod_part = parts[0].strip()
             if len(parts) == 2 and parts[1].strip():
-                symbol = parts[1].strip()
+                # The tail can carry a trailing disassembly copy; keep the ID.
+                symbol = parts[1].strip().split("\t")[0].strip()
             mo = _MODULE_OFFSET_RE.match(mod_part)
             if mo:
                 module, offset = mo.group(1), mo.group(2)
-            elif mod_part:
-                module = mod_part
+            else:
+                # Symbolicated variant, e.g.
+                #   Fallout4.exe+1B51432\tmov r14d, eax |  BSJobs::JobThread::RunJob(void)_1B51432
+                # _MODULE_OFFSET_RE anchors on $, so the whole line used to fall
+                # through to `module` -- taking the disassembly and the function
+                # name with it, and leaving `symbol` holding an address-library
+                # ID instead of the name. Measured on a 400-log real corpus:
+                # 649 of 9,748 frames were corrupted this way, and the function
+                # names they hid are the largest identifiable crash family in the
+                # corpus (Actor::Predestroy / ~Actor / CleanUpOtherMobileObjects).
+                lead = _FRAME_MODULE_RE.match(mod_part)
+                if lead:
+                    module, offset = lead.group(1), lead.group(2)
+                elif mod_part:
+                    module = mod_part.split("\t")[0].strip() or None
+                fn = _FRAME_FUNCTION_RE.search(mod_part)
+                if fn:
+                    # A real function name beats an address-library ID.
+                    symbol = fn.group(1)
         frames.append(
             {
                 "index": int(m.group(1)),
