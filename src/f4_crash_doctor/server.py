@@ -191,6 +191,54 @@ def scan_game_environment() -> dict:
         return _error(e)
 
 
+def _environment_only(err: dict) -> dict:
+    """Diagnose from the environment when there is no crash log to read.
+
+    Returns the SAME shape as a full diagnosis so callers do not branch: a
+    `log_summary` of None, the findings the environment alone supports, and
+    notes explaining why the absence of a log is itself diagnostic rather than
+    an obstacle.
+    """
+    env = environment.scan_environment()
+    lo = environment.get_load_order(managers=env.get("managers"))
+    findings = knowledge.match_signatures({}, lo, env)
+
+    notes = [
+        "NO CRASH LOG WAS FOUND, and that is not necessarily a problem to solve "
+        "before helping. The findings below come from the installed files alone.",
+        "If F4SE is not loading, there will never be a crash log: the crash "
+        "logger (Buffout 4 / CrashLogger) is itself an F4SE plugin, so it cannot "
+        "run to record its own failure. An empty crash-log folder alongside a "
+        "version mismatch below is consistent with that, not evidence against it.",
+    ]
+    notes += knowledge.staleness_notes({}, lo, env, findings)
+    if not findings:
+        notes.append(
+            "No environment signature matched either. Ask the user what changed "
+            "recently -- a game update, a new mod, a mod manager change -- and "
+            "whether the game starts at all, crashes on launch, or crashes in "
+            "play. Those three cases have different causes."
+        )
+    else:
+        notes.append(
+            "Read the findings as the environment's own account of what is wrong. "
+            "Check the versions reported below against each other before "
+            "recommending anything: the game exe, the F4SE loader and the Address "
+            "Library must all match, and a fix naming only one of them can leave "
+            "the user exactly where they started."
+        )
+
+    return {
+        "log_summary": None,
+        "no_crash_log": err.get("error"),
+        "searched_dirs": err.get("searched_dirs", []),
+        "findings": findings,
+        "environment": env,
+        "load_order": lo,
+        "notes": notes,
+    }
+
+
 @mcp.tool()
 def diagnose_crash(path: str | None = None) -> dict:
     """One-shot crash diagnosis: parse log + scan environment + match signatures.
@@ -207,7 +255,18 @@ def diagnose_crash(path: str | None = None) -> dict:
     try:
         target, err = _resolve_log_path(path)
         if err is not None:
-            return err
+            # An explicitly refused path is a caller error: return it.
+            if path is not None:
+                return err
+            # "No crash logs found" is NOT a dead end, and treating it as one
+            # was a real defect. The most common breakage in modded Fallout 4 --
+            # a game update that leaves F4SE behind -- produces NO crash log at
+            # all, because the crash logger is itself an F4SE plugin and cannot
+            # run to record its own failure. The environment scan diagnoses that
+            # case completely on its own. Verified 2026-08-29 against a live
+            # break: this tool returned a bare error while a severity-6,
+            # high-confidence finding sat one call away.
+            return _environment_only(err)
         parsed = crashlog.parse_crash_log_file(target)
         if "error" in parsed and "exception" not in parsed:
             return parsed
