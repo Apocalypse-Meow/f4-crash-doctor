@@ -89,10 +89,43 @@ def _cond_plugin_ff_index(
     return False, ""
 
 
+def _cond_f4se_version_mismatch(
+    parsed_log: dict, load_order: dict, environment: dict
+) -> tuple[bool, str]:
+    """F4SE built for a different game version than the one installed.
+
+    This is the ROOT cause after a game update, and it used to be invisible:
+    SIG-F4SE-VERSION carried no conditions and no scopes, so the matcher's
+    "documentation-only entries never match" rule skipped it and it could never
+    fire. Measured against a live break on 2026-08-29 -- game updated to
+    1.11.240 with F4SE still at 1.11.221 -- only the Address Library finding
+    appeared, and acting on that alone leaves the game exactly as broken,
+    because F4SE itself still refuses to load.
+
+    F4SE reports three components ("1.11.221"), the exe four ("1.11.240.0").
+    Compare on the first three, which is what F4SE itself version-checks.
+    """
+    f4se = environment.get("f4se", {}) or {}
+    if not f4se.get("installed"):
+        return False, ""  # not installed is a different problem
+    dll = str(f4se.get("dll_version") or "").strip()
+    game = str(environment.get("game_exe_version") or "").strip()
+    if not dll or not game:
+        return False, ""  # cannot tell; never guess a mismatch
+    if dll.split(".")[:3] == game.split(".")[:3]:
+        return False, ""
+    return True, (
+        f"F4SE is built for game version {dll} but the installed game exe is "
+        f"{game}. F4SE refuses to load against a version it was not built for, "
+        f"which stops every F4SE plugin at once"
+    )
+
+
 CONDITION_CHECKS: dict[str, Callable[[dict, dict, dict], tuple[bool, str]]] = {
     "address_library_mismatch": _cond_address_library_mismatch,
     "plugins_missing_from_data": _cond_plugins_missing_from_data,
     "plugin_ff_index": _cond_plugin_ff_index,
+    "f4se_version_mismatch": _cond_f4se_version_mismatch,
 }
 
 

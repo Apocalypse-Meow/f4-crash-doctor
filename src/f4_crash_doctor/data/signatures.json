@@ -5,9 +5,11 @@
     "severity": 6,
     "confidence": "high",
     "scopes": [],
-    "conditions": ["address_library_mismatch"],
+    "conditions": [
+      "address_library_mismatch"
+    ],
     "cause": "The Address Library is a lookup file that most F4SE plugins use to find their way around the game's program code. Each Address Library file is built for one exact game version, so after a game update (or a downgrade) the old file points at the wrong places in memory. When that happens, F4SE mods misfire and the game crashes, often right at startup or seemingly at random.",
-    "fix": "Download the Address Library build that matches your exact game version from its Nexus page (mod 47327) and install it with your mod manager, replacing the old one. You can check your game version by right-clicking Fallout4.exe, choosing Properties, then the Details tab. If your game just updated, some F4SE mods may also need updates before things are stable again.",
+    "fix": "Download the Address Library build matching your exact game version from its Nexus page (mod 47327) and install it, replacing the old one. Check your version by right-clicking Fallout4.exe > Properties > Details. IMPORTANT: if the game just updated, F4SE itself almost certainly needs updating too -- the Address Library alone will not bring your mods back. Check the F4SE version against the game version as well, and update both.",
     "sources": [
       "https://www.nexusmods.com/fallout4/mods/47327",
       "https://wiki.fireundubh.com/fallout4/buffout-faqs"
@@ -15,13 +17,15 @@
   },
   {
     "id": "SIG-F4SE-VERSION",
-    "name": "F4SE version does not match the game version (background knowledge)",
-    "severity": 5,
-    "confidence": "medium",
+    "name": "F4SE does not match the game version",
+    "severity": 6,
+    "confidence": "high",
     "scopes": [],
-    "conditions": [],
-    "cause": "F4SE (the Fallout 4 Script Extender) is the loader that makes most advanced mods possible, and every F4SE release is locked to one exact game version. If Steam updates the game, the old F4SE stops working: the game either refuses to launch through the loader, launches without mods, or crashes early. This entry is background knowledge for the diagnosis workflow rather than a pattern matched from the crash log itself.",
-    "fix": "Compare your game version (right-click Fallout4.exe, Properties, Details tab) against the F4SE version you have installed, and grab the matching F4SE build from f4se.silverlock.org or its Nexus page if they differ. After a game update, also expect to update the Address Library and some F4SE plugin mods. If you deliberately run an older game version, make sure every one of those pieces targets that same version.",
+    "conditions": [
+      "f4se_version_mismatch"
+    ],
+    "cause": "F4SE (Fallout 4 Script Extender) is built against one exact game version and refuses to load against any other. Your game was updated and F4SE was not, so F4SE is not running at all -- and every mod that depends on it stops with it, including Buffout 4, LooksMenu and any other F4SE plugin. The game itself will still start, which is what makes this confusing: it launches, but as if none of your script-extender mods were installed.",
+    "fix": "Install the F4SE build that matches your new game version, from f4se.silverlock.org (or its Nexus page). THEN install the matching Address Library (Nexus mod 47327) -- both must match the game, and fixing only one leaves the game exactly as broken. Check your game version by right-clicking Fallout4.exe > Properties > Details. If no F4SE build exists for your version yet, which is common in the first days after an update, your options are to wait, or to downgrade the game back to the version your mods were built for.",
     "sources": [
       "https://f4se.silverlock.org/",
       "https://www.nexusmods.com/fallout4/mods/42147"
@@ -33,7 +37,9 @@
     "severity": 5,
     "confidence": "high",
     "scopes": [],
-    "conditions": ["plugins_missing_from_data"],
+    "conditions": [
+      "plugins_missing_from_data"
+    ],
     "cause": "Your load order lists plugins as enabled that are not actually present in the game's Data folder. Mod plugins often depend on other plugins (called their 'masters'), and if a required file is missing or disabled the game typically crashes at the main menu or the moment you load a save. This usually happens after uninstalling a mod that something else still depends on, or when a mod manager's deployment got out of sync.",
     "fix": "Look at the file names listed in the evidence for this finding. For each one, either reinstall the mod that provides it or disable the plugins that require it, using your mod manager. If you use Vortex, run a deployment (Purge then Deploy can resync a confused state); if you use MO2, check that the plugin is enabled in the right profile. Avoid saving your game until the load order is consistent again.",
     "sources": [
@@ -46,7 +52,12 @@
     "severity": 5,
     "confidence": "high",
     "scopes": [
-      { "scope": "call_stack", "any_of": ["flexRelease_x64.dll"] }
+      {
+        "scope": "call_stack",
+        "any_of": [
+          "flexRelease_x64.dll"
+        ]
+      }
     ],
     "conditions": [],
     "cause": "The crash happened inside NVIDIA Flex (flexRelease_x64.dll), the physics library behind the 'Weapon Debris' graphics setting. That library predates NVIDIA's RTX cards and is broken on them, so with Weapon Debris enabled the game crashes during combat, usually when shooting near surfaces. This is a stock game bug, not a mod problem.",
@@ -62,7 +73,13 @@
     "severity": 4,
     "confidence": "medium",
     "scopes": [
-      { "scope": "call_stack", "any_of": ["nvwgf2umx.dll"], "min_count": 2 }
+      {
+        "scope": "call_stack",
+        "any_of": [
+          "nvwgf2umx.dll"
+        ],
+        "min_count": 2
+      }
     ],
     "conditions": [],
     "cause": "The crash call stack is dominated by nvwgf2umx.dll, which is the NVIDIA graphics driver itself. That points at the driver rather than a specific mod: common triggers are a buggy driver release, an overlay injecting into the game (GeForce Experience, Discord, Steam overlay), or an unstable GPU or memory overclock. Heavy texture mods can make a marginal card fall over sooner, but the driver is where it died.",
@@ -77,7 +94,12 @@
     "severity": 3,
     "confidence": "medium",
     "scopes": [
-      { "scope": "call_stack", "any_of": ["d3d11.dll"] }
+      {
+        "scope": "call_stack",
+        "any_of": [
+          "d3d11.dll"
+        ]
+      }
     ],
     "conditions": [],
     "cause": "The crash involves d3d11.dll, the DirectX 11 graphics layer. In a modded install this file in the game folder is often not Microsoft's copy but a wrapper placed there by ENB, ReShade, or an upscaler bridge, and an outdated or conflicting wrapper is a common crash source. Two injectors trying to hook the same game at once is a classic culprit.",
@@ -93,7 +115,12 @@
     "severity": 6,
     "confidence": "high",
     "scopes": [
-      { "scope": "call_stack", "any_of": ["LooseFileAsyncStream"] }
+      {
+        "scope": "call_stack",
+        "any_of": [
+          "LooseFileAsyncStream"
+        ]
+      }
     ],
     "conditions": [],
     "cause": "The crash points at LooseFileAsyncStream, the classic sign that the game ran out of slots for open .ba2 archive files. Almost every mod ships its content in one or two .ba2 archives, and the engine can only keep a limited number open at once; big mod lists blow past that cap and the game dies while loading, often on startup or when entering a new area. The 2024 'next-gen' update raised the cap, but it is still a hard limit.",
@@ -109,7 +136,13 @@
     "severity": 4,
     "confidence": "medium",
     "scopes": [
-      { "scope": "call_stack", "any_of": ["Create2DTexture", "DefaultTexture"] }
+      {
+        "scope": "call_stack",
+        "any_of": [
+          "Create2DTexture",
+          "DefaultTexture"
+        ]
+      }
     ],
     "conditions": [],
     "cause": "The crash happened while the game was creating a texture, which usually means a texture mod contains a broken .dds file. Common problems are textures saved in a compression format the game does not accept, or images whose width or height is not divisible by 4, which the game's compressed formats require. The crash tends to happen when the object using the bad texture first appears.",
@@ -124,7 +157,13 @@
     "severity": 4,
     "confidence": "medium",
     "scopes": [
-      { "scope": "call_stack", "any_of": ["BSFadeNode", "BSMultiBoundNode"] }
+      {
+        "scope": "call_stack",
+        "any_of": [
+          "BSFadeNode",
+          "BSMultiBoundNode"
+        ]
+      }
     ],
     "conditions": [],
     "cause": "The crash involves the game's 3D model machinery (BSFadeNode / BSMultiBoundNode), which typically means a mod's .nif mesh file is malformed or incompatible with your game version. The game crashes when the broken model is loaded, so it often looks location-specific: entering a particular cell, looking at a particular object, or when a certain item or creature spawns.",
@@ -139,7 +178,13 @@
     "severity": 4,
     "confidence": "medium",
     "scopes": [
-      { "scope": "call_stack", "any_of": ["BGSLocation", "BGSQueuedTerrainInitialLoad"] }
+      {
+        "scope": "call_stack",
+        "any_of": [
+          "BGSLocation",
+          "BGSQueuedTerrainInitialLoad"
+        ]
+      }
     ],
     "conditions": [],
     "cause": "Fallout 4 pre-merges much of its world geometry into 'precombines' and pre-computes what is visible ('previs') as a performance system. Mods that let you scrap everything, or that edit city areas without rebuilding this data, break the system; the result is heavy stutter and crashes when entering or looking toward the affected areas, with location machinery (BGSLocation, terrain loading) in the crash stack.",
@@ -155,7 +200,9 @@
     "severity": 5,
     "confidence": "high",
     "scopes": [],
-    "conditions": ["plugin_ff_index"],
+    "conditions": [
+      "plugin_ff_index"
+    ],
     "cause": "The crash log shows a plugin sitting at load index FF, which is past the game's cap of 255 full plugins. Anything at or beyond that slot is not loaded correctly, and the engine misbehaves badly once the cap is exceeded, from broken content to outright crashes. Light '.esl' plugins do not count against this cap because they share the special FE slot.",
     "fix": "Reduce your count of full plugins below 255. In your mod manager, disable plugins you no longer need, and check which of your .esp files are eligible to be converted or flagged as light (ESL) so they move into the shared FE slot; many mod authors offer ESL versions. Merging small patch plugins is another community-standard approach. Recount after each change until nothing sits at FF.",
     "sources": [
@@ -168,7 +215,13 @@
     "severity": 5,
     "confidence": "high",
     "scopes": [
-      { "scope": "call_stack", "any_of": ["BSMemStorage", "DataMemStorage"] }
+      {
+        "scope": "call_stack",
+        "any_of": [
+          "BSMemStorage",
+          "DataMemStorage"
+        ]
+      }
     ],
     "conditions": [],
     "cause": "The crash stack points at the engine's plugin data storage (BSMemStorage / DataMemStorage), a pattern seen when the load order has more plugin data than the game can track, usually from exceeding the 255 full-plugin cap or from a very heavy combination of large plugins. The game tends to crash at the main menu or early in loading when this happens.",
@@ -183,7 +236,12 @@
     "severity": 5,
     "confidence": "high",
     "scopes": [
-      { "scope": "exception", "any_of": ["EXCEPTION_STACK_OVERFLOW"] }
+      {
+        "scope": "exception",
+        "any_of": [
+          "EXCEPTION_STACK_OVERFLOW"
+        ]
+      }
     ],
     "conditions": [],
     "cause": "The game hit a stack overflow, which means some piece of code called itself in a loop until it ran out of room. In modded Fallout 4 this is usually two mods reacting to each other endlessly (for example two mods both editing the same scripted event), or a single mod with a scripting bug. It is rarely a hardware or driver problem.",
@@ -200,8 +258,12 @@
     "scopes": [
       {
         "scope": "exception",
-        "all_of": ["EXCEPTION_ACCESS_VIOLATION"],
-        "any_of": ["0x000000000000"]
+        "all_of": [
+          "EXCEPTION_ACCESS_VIOLATION"
+        ],
+        "any_of": [
+          "0x000000000000"
+        ]
       }
     ],
     "conditions": [],
@@ -217,7 +279,12 @@
     "severity": 4,
     "confidence": "high",
     "scopes": [
-      { "scope": "call_stack", "any_of": ["BGSSaveLoadManager"] }
+      {
+        "scope": "call_stack",
+        "any_of": [
+          "BGSSaveLoadManager"
+        ]
+      }
     ],
     "conditions": [],
     "cause": "The crash happened inside the game's save/load system (BGSSaveLoadManager), which usually means the save file itself carries a problem rather than a currently installed mod. The classic cause is removing a script-heavy mod mid-playthrough: its scripts stay baked into the save as 'orphans' and can crash the game on load or during autosaves.",
@@ -235,7 +302,10 @@
     "scopes": [
       {
         "scope": "call_stack",
-        "any_of": ["Scaleform::Gfx::Value", "InstalledContentPanelBackground"]
+        "any_of": [
+          "Scaleform::Gfx::Value",
+          "InstalledContentPanelBackground"
+        ]
       }
     ],
     "conditions": [],
@@ -251,7 +321,12 @@
     "severity": 4,
     "confidence": "medium",
     "scopes": [
-      { "scope": "call_stack", "any_of": ["LoadScreenTranslucent.nif"] }
+      {
+        "scope": "call_stack",
+        "any_of": [
+          "LoadScreenTranslucent.nif"
+        ]
+      }
     ],
     "conditions": [],
     "cause": "The crash references LoadScreenTranslucent.nif, a load-screen asset tied to the 2024 'next-gen' update. Seeing it in a crash usually means your game executable and your game content are from different generations - for example a downgraded .exe still reading next-gen files, or a partially applied update. The mismatch shows up as crashes on load screens or at startup.",
@@ -266,7 +341,13 @@
     "severity": 3,
     "confidence": "medium",
     "scopes": [
-      { "scope": "call_stack", "any_of": ["X3DAudio1_7.dll", "XAudio2_7.dll"] }
+      {
+        "scope": "call_stack",
+        "any_of": [
+          "X3DAudio1_7.dll",
+          "XAudio2_7.dll"
+        ]
+      }
     ],
     "conditions": [],
     "cause": "The crash happened in the game's audio layer (X3DAudio/XAudio), which belongs to an older generation of DirectX that Windows no longer includes by default. Two common causes: the legacy 'DirectX End-User Runtime (June 2010)' is missing from the system, or a sound mod ships audio files in a format the game cannot digest.",
@@ -282,7 +363,13 @@
     "severity": 3,
     "confidence": "medium",
     "scopes": [
-      { "scope": "call_stack", "any_of": ["cbp.dll", "skeleton.nif"] }
+      {
+        "scope": "call_stack",
+        "any_of": [
+          "cbp.dll",
+          "skeleton.nif"
+        ]
+      }
     ],
     "conditions": [],
     "cause": "The crash points at body physics (cbp.dll) or a character skeleton file (skeleton.nif). Body physics mods are F4SE plugins locked to specific game versions, and they also depend on an extended skeleton being installed and loaded in the right order. A physics DLL built for a different game version, or a body mod overwriting the skeleton, produces crashes when characters load.",
@@ -297,7 +384,12 @@
     "severity": 2,
     "confidence": "low",
     "scopes": [
-      { "scope": "exception", "any_of": ["0x000100000000"] }
+      {
+        "scope": "exception",
+        "any_of": [
+          "0x000100000000"
+        ]
+      }
     ],
     "conditions": [],
     "cause": "The crash address matches a pattern the community loosely associates with Creation Club content and active magic/chem effects on the player. It is a weak signal: the same address pattern can appear for unrelated reasons, so this finding alone should not drive any changes.",

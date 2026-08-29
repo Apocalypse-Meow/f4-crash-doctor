@@ -221,13 +221,27 @@ def test_documentation_only_never_matches() -> None:
                             signatures=[sig()]) == []
 
 
-def test_shipped_documentation_only_entry_exists_but_never_matches() -> None:
+def test_no_shipped_entry_is_documentation_only() -> None:
+    """Every shipped signature must be reachable.
+
+    This test used to assert the opposite: that SIG-F4SE-VERSION was
+    documentation-only and could never match. That was true and it was a
+    defect -- it meant the root cause of the most common breakage in modded
+    Fallout 4 (a game update leaving F4SE behind) could never be reported.
+    Confirmed against a live break on 2026-08-29, where only the downstream
+    Address Library finding appeared and acting on it alone left the game
+    exactly as broken.
+
+    SIG-F4SE-VERSION now carries the `f4se_version_mismatch` condition. The
+    documentation-only MECHANISM is unchanged and still pinned by
+    test_documentation_only_never_matches above, with a synthetic signature --
+    which is the right place for it, since no shipped entry should rely on it.
+    """
     sigs = load_signatures()
-    doc = [s for s in sigs if not s["scopes"] and not s["conditions"]]
-    assert any(s["id"] == "SIG-F4SE-VERSION" for s in doc)
-    log = make_log(call_stack_lines=["f4se f4se f4se"])
-    found = match_signatures(log, signatures=sigs)
-    assert "SIG-F4SE-VERSION" not in [f["id"] for f in found]
+    unreachable = [s["id"] for s in sigs if not s["scopes"] and not s["conditions"]]
+    assert unreachable == [], (
+        f"these signatures can never fire and will never reach a user: {unreachable}"
+    )
 
 
 def test_severity_desc_then_confidence_ordering() -> None:
