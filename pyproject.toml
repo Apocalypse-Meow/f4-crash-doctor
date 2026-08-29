@@ -1,11 +1,16 @@
 [project]
 name = "f4-crash-doctor"
-version = "0.1.1"
+version = "0.1.2"
 description = "Advisory-only Fallout 4 crash diagnosis MCP server (F4 Crash Doctor) — reads Buffout 4 crash logs, load order and game environment; never writes files"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "mcp>=1.0",
+    # Upper bound is load-bearing: mcp 2.x renames FastMCP to MCPServer, so an
+    # unbounded ">=1.0" resolves to a version this code cannot import. Today only
+    # the shipped uv.lock prevents that; a regenerated lock would ship a bundle
+    # that fails to start. Verified 2026-08-29 by resolving mcp 2.x against this
+    # source: ModuleNotFoundError on mcp.server.fastmcp.
+    "mcp>=1.0,<2",
     "httpx>=0.27",
     "python-dotenv>=1.0",
 ]

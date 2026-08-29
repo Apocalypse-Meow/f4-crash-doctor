@@ -3,7 +3,7 @@
   "manifest_version": "0.4",
   "name": "f4-crash-doctor",
   "display_name": "F4 Crash Doctor",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Diagnoses Fallout 4 crashes and mod problems. Advisory-only: it reads your crash logs and load order, explains the cause, and never touches your files.",
   "long_description": "Your modded Fallout 4 crashed? F4 Crash Doctor gives Claude everything it needs to work out why: it finds and parses Buffout 4 crash logs, reads your load order, checks F4SE / Address Library / game-version health, detects whether MO2 or Vortex manages your game, and matches it all against a knowledge pack of known Fallout 4 crash causes.\n\n**Advisory-only by design** — every tool is read-only. It diagnoses and explains; you stay in control of every change. Optional: add your Nexus Mods API key to let it look up mod pages for you.",
   "author": { "name": "Alex Naughton", "email": "alexnaughton28@live.com.au" },
