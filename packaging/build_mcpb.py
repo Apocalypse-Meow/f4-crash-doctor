@@ -3,6 +3,11 @@
 Usage (from m0/):  uv run python packaging/build_mcpb.py
 Output:            m0/dist/f4-crash-doctor.mcpb
 
+If an MCP server is currently running from this checkout (e.g. a Claude Code
+session has it registered), its console script locks the venv and `uv run`
+fails mid-sync with os error 32. Use `uv run --no-sync python
+packaging/build_mcpb.py` — this script needs only the stdlib and npx.
+
 Stages manifest + the minimal server payload (pyproject, lock, src/) into
 dist/bundle/, then packs it with the official CLI (npx @anthropic-ai/mcpb).
 """
